@@ -1,52 +1,70 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Konfigurasi API dari secrets.toml
+# Konfigurasi API Key
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-model = genai.GenerativeModel("gemini-pro")
 
-# 🧱 Konfigurasi Streamlit UI
-st.set_page_config(page_title="Animagine Prompt Generator", page_icon="✨")
-st.title("✨ Animagine - Prompt Generator")
-st.markdown("Bikin karakter anime 3D stylized ala Genshin Impact & Naruto hanya dengan deskripsi!")
+# Inisialisasi model Gemini (v1)
+model = genai.GenerativeModel("models/gemini-pro")
 
-st.divider()
+# Streamlit App UI
+st.set_page_config(page_title="Animagine: Create Your Anime Character!", page_icon="✨")
 
-# 📥 Form Input
+st.markdown("""
+    <style>
+        .big-title {
+            font-size:42px;
+            font-weight:700;
+            color:#FF4B4B;
+            text-align:center;
+            margin-bottom:20px;
+        }
+        .subtext {
+            font-size:18px;
+            color:#ccc;
+            text-align:center;
+            margin-bottom:40px;
+        }
+        .prompt-box {
+            background-color:#1e1e1e;
+            padding:20px;
+            border-radius:10px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="big-title">Animagine 🎨</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtext">Create a 3D-style anime character with AI!</div>', unsafe_allow_html=True)
+
 with st.form("anime_form"):
-    col1, col2 = st.columns(2)
-    with col1:
-        name = st.text_input("👤 Nama Karakter", placeholder="Contoh: Kalea")
-        gender = st.selectbox("🚻 Gender", ["Laki-laki", "Perempuan"])
-    with col2:
-        skill = st.text_input("🔥 Skill Utama", placeholder="Contoh: Rasengan")
-        ultimate = st.text_input("💥 Ultimate Technique", placeholder="Contoh: Kuchiyose Edo Tensei")
-    vibe = st.text_area("🎭 Karakter / Personality", placeholder="Contoh: tenang, setia, perhitungan")
-    generate = st.form_submit_button("🚀 Generate Prompt")
+    name = st.text_input("👤 Character Name", "Anjay Gurinjay")
+    gender = st.selectbox("⚧️ Gender", ["Laki-laki", "Perempuan"])
+    skill = st.text_input("🌀 Main Skill", "Rasengan")
+    ultimate = st.text_input("💥 Ultimate Move", "Kuchiyose Edo Tensei")
+    reference = st.text_area("🧠 Gaya visual (inspirasi visual)", "Genshin Impact, Naruto Storm")
+    submit = st.form_submit_button("🔮 Generate Prompt")
 
-# 🔮 Prompt Generator
-if generate:
-    if not name or not skill or not ultimate:
-        st.warning("Lengkapi minimal Nama, Skill, dan Ultimate-nya ya brodi.")
-    else:
-        full_prompt = f"""/imagine prompt:
-Generate a 3D anime-style character named {name}, a {gender.lower()} who controls Api.
-Their main skill is {skill}. Their ultimate technique is {ultimate}.
-{"They are described as " + vibe + "." if vibe else ""}
-Use cel-shading and dynamic lighting, inspired by anime like Genshin Impact and Naruto Storm.
-"""
+if submit:
+    with st.spinner("Menciptakan prompt..."):
+        full_prompt = f"""
+        /imagine prompt:
+        Generate a 3D anime-style character named {name}, a {gender.lower()} who controls API.
+        Their main skill is {skill}. Their ultimate technique is {ultimate}.
+        Use cel-shading and dynamic lighting, inspired by anime like {reference}.
+        """
 
-        with st.spinner("Menghubungi Gemini API..."):
-            try:
-                response = model.generate_content(full_prompt)
-                st.success("✅ Prompt berhasil dibuat!")
+        try:
+            response = model.generate_content(full_prompt)
+            st.success("✅ Prompt berhasil dibuat!")
+            st.markdown("### ✨ Prompt Final:")
+            st.code(full_prompt.strip(), language="markdown")
 
-                st.markdown("### 🎨 /imagine Prompt")
-                st.code(full_prompt, language="markdown")
+            st.markdown("### 🧠 Respon AI:")
+            st.write(response.text)
 
-                st.markdown("### 🤖 Output Gemini")
-                st.write(response.text)
+        except Exception as e:
+            st.error("❌ Terjadi kesalahan saat menghubungi Gemini API.")
+            st.exception(e)
 
-            except Exception as e:
-                st.error("Gagal generate dari Gemini. Cek API Key atau koneksi.")
-                st.exception(e)
+st.markdown("---")
+st.caption("Animagine - Powered by Gemini & Streamlit ✨")
