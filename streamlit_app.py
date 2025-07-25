@@ -1,34 +1,52 @@
 import streamlit as st
-import os
 import google.generativeai as genai
-from prompt_generator import generate_prompt
 
-# Konfigurasi Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Konfigurasi API dari secrets.toml
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 model = genai.GenerativeModel("gemini-pro")
 
-# Fungsi generate dari prompt
-def generate_image_from_prompt(prompt):
-    response = model.generate_content(prompt)
-    return response.text
+# 🧱 Konfigurasi Streamlit UI
+st.set_page_config(page_title="Animagine Prompt Generator", page_icon="✨")
+st.title("✨ Animagine - Prompt Generator")
+st.markdown("Bikin karakter anime 3D stylized ala Genshin Impact & Naruto hanya dengan deskripsi!")
 
-st.set_page_config(page_title="Animagine", layout="centered")
+st.divider()
 
-st.title("🎌 Animagine – /imagine Prompt Generator")
-st.markdown("Buat karakter anime kamu dan hasilkan prompt siap pakai untuk Gemini AI.")
+# 📥 Form Input
+with st.form("anime_form"):
+    col1, col2 = st.columns(2)
+    with col1:
+        name = st.text_input("👤 Nama Karakter", placeholder="Contoh: Kalea")
+        gender = st.selectbox("🚻 Gender", ["Laki-laki", "Perempuan"])
+    with col2:
+        skill = st.text_input("🔥 Skill Utama", placeholder="Contoh: Rasengan")
+        ultimate = st.text_input("💥 Ultimate Technique", placeholder="Contoh: Kuchiyose Edo Tensei")
+    vibe = st.text_area("🎭 Karakter / Personality", placeholder="Contoh: tenang, setia, perhitungan")
+    generate = st.form_submit_button("🚀 Generate Prompt")
 
-character_name = st.text_input("Nama Karakter")
-gender = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
-element = st.selectbox("Elemen Utama", ["Api", "Air", "Bumi", "Angin", "Petir"])
-skill1 = st.text_input("Skill 1")
-ultimate = st.text_input("Ultimate Move")
+# 🔮 Prompt Generator
+if generate:
+    if not name or not skill or not ultimate:
+        st.warning("Lengkapi minimal Nama, Skill, dan Ultimate-nya ya brodi.")
+    else:
+        full_prompt = f"""/imagine prompt:
+Generate a 3D anime-style character named {name}, a {gender.lower()} who controls Api.
+Their main skill is {skill}. Their ultimate technique is {ultimate}.
+{"They are described as " + vibe + "." if vibe else ""}
+Use cel-shading and dynamic lighting, inspired by anime like Genshin Impact and Naruto Storm.
+"""
 
-if st.button("🎨 Generate Prompt + Image"):
-    prompt = generate_prompt(character_name, gender, element, skill1, ultimate)
-    st.text_area("✨ Hasil Prompt", value=prompt, height=300)
+        with st.spinner("Menghubungi Gemini API..."):
+            try:
+                response = model.generate_content(full_prompt)
+                st.success("✅ Prompt berhasil dibuat!")
 
-    with st.spinner("Menghubungi Gemini..."):
-        result = generate_image_from_prompt(prompt)
+                st.markdown("### 🎨 /imagine Prompt")
+                st.code(full_prompt, language="markdown")
 
-    st.markdown("🖼️ **Respons dari Gemini:**")
-    st.write(result)
+                st.markdown("### 🤖 Output Gemini")
+                st.write(response.text)
+
+            except Exception as e:
+                st.error("Gagal generate dari Gemini. Cek API Key atau koneksi.")
+                st.exception(e)
