@@ -1,99 +1,109 @@
 import streamlit as st
 import random
 
-# ⚙️ Setup
-st.set_page_config(page_title="Design Story Builder", layout="centered")
+# 🧠 Setup
+st.set_page_config(page_title="ElPrompt — The Art of Lazy Creativity", layout="centered")
 
-# 🎨 CSS biar vibe-nya chill
+# 🎨 Custom CSS
 st.markdown("""
 <style>
 body {
-    background: radial-gradient(circle at top, #1e1e1e, #0d0d0d);
-    color: white;
+    background: radial-gradient(circle at top, #111, #000);
+    color: #fff;
     font-family: 'Poppins', sans-serif;
 }
 .title {
-    font-size: 44px;
-    font-weight: bold;
+    font-size: 50px;
+    font-weight: 800;
     text-align: center;
-    color: #00E5FF;
-    text-shadow: 0 0 20px #00E5FF;
-    margin-bottom: 10px;
+    color: #00FFE0;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px #00FFE0;
+    margin-top: 40px;
 }
 .subtitle {
     text-align: center;
     color: #aaa;
-    margin-bottom: 40px;
+    font-size: 16px;
+    margin-bottom: 50px;
+    font-style: italic;
 }
 .form-box {
     background-color: rgba(255,255,255,0.05);
     padding: 30px;
-    border-radius: 14px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
 }
 .stButton>button {
-    background: linear-gradient(90deg, #00E5FF, #18FFFF);
-    color: black;
-    border-radius: 10px;
-    padding: 0.7em 2em;
+    background: linear-gradient(90deg, #00FFE0, #00B8D4);
+    color: #000;
+    border-radius: 12px;
+    padding: 0.8em 2em;
     font-weight: 600;
     border: none;
-    transition: 0.2s;
+    transition: 0.3s;
+    font-size: 16px;
 }
 .stButton>button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 15px #00E5FF;
+    box-shadow: 0 0 20px #00FFE0;
+}
+.output-box {
+    background-color: rgba(255,255,255,0.08);
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 30px;
+    box-shadow: inset 0 0 15px rgba(0,255,224,0.3);
+}
+.signature {
+    text-align: center;
+    color: #00FFE0;
+    font-size: 14px;
+    margin-top: 40px;
+    font-family: monospace;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# 🧠 Header
-st.markdown('<div class="title">🎨 Design Story Builder</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Ngobrol santai bareng ide desain. Output-nya? Cerita yang ngasih feel visual lo 🎭</div>', unsafe_allow_html=True)
+# 🪄 Header
+st.markdown('<div class="title">ElPrompt</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">the art of lazy creativity — when boredom meets style</div>', unsafe_allow_html=True)
 
-# 🎯 Form
-with st.form("design_form"):
+# 🎛️ Input form
+with st.form("elprompt_form"):
     st.markdown('<div class="form-box">', unsafe_allow_html=True)
 
-    theme = st.text_input("🎯 Ceritain dulu, temanya apa bro?", "Promo Akhir Tahun")
-    vibe = st.selectbox("😎 Kesan apa yang mau lo munculin?", ["Hangat", "Megah", "Enerjik", "Kalem", "Elegan", "Rame tapi rapi"])
-    color = st.text_input("🌈 Warna yang pengen dominan?", "Merah dan Kuning")
-    object_focus = st.text_input("🧱 Fokus utamanya apa?", "Produk utama dan tulisan diskon besar")
-    mood = st.selectbox("💫 Kalau desain ini orang, dia kayak gimana?", ["Ramah tapi pede", "Cool dan profesional", "Lincah dan heboh", "Tenang tapi kuat"])
-    bg = st.selectbox("🪄 Background-nya lo bayangin kayak gimana?", ["Cerahan", "Gelap elegan", "Gradasi lembut", "Polos minimalis", "Bokeh modern"])
+    tema = st.text_input("🧠 Tema / Ide dasar", "nostalgia warnet tahun 2000an")
+    gaya = st.selectbox("🎨 Gaya / Nuansa", ["cinematic", "dreamy", "brutalist", "magazine style", "moody realism", "playful modern", "retro-futurism"])
+    vibe = st.selectbox("💫 Vibe / Emosi", ["gloomy", "energetic", "calm", "chaotic", "romantic", "mysterious", "absurd", "melancholy"])
 
-    submit = st.form_submit_button("✨ Ceritain Desain Gue")
+    submit = st.form_submit_button("🚀 summon elprompt")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 🖋️ Output Cerita
+# ⚡ Output
 if submit:
-    hook = random.choice([
-        "Bayangin lo lagi buka file Photoshop, terus warna pertama yang muncul langsung bikin senyum.",
-        "Desain ini kayak punya napas sendiri, tenang tapi bener-bener nyentuh mata yang ngelihat.",
-        "Begitu layout-nya muncul, rasanya kayak poster ini udah siap naik billboard.",
-        "Satu layer demi layer dibuka, tiap elemen kayak ngomong hal yang sama: ‘ini keren’.",
-        "Pas udah jadi, desainnya tuh bukan cuma visual — tapi vibe."
-    ])
+    openings = [
+        "A detailed visual concept of",
+        "An artistic representation of",
+        "A surreal yet realistic depiction of",
+        "A cinematic frame capturing",
+        "A concept art describing"
+    ]
 
-    ending = random.choice([
-        "Kalau ini naik di IG Mitra Bangunan, pasti langsung banyak yang berhenti scroll.",
-        "Desainnya simple, tapi punya karisma yang bikin orang pengen liat dua kali.",
-        "Kayak ada energi yang gak bisa dijelasin, tapi kerasa banget di mata.",
-        "Ini bukan sekadar promo, tapi perasaan visual yang lo bisa rasain.",
-        "Cocok banget buat konten yang pengen keliatan niat tapi gak ribet."
-    ])
+    extras = [
+        "Focus on atmosphere, subtle textures, and emotion-driven lighting.",
+        "Include rich composition, depth, and mood harmony.",
+        "Stylized but grounded — visually poetic yet modern.",
+        "Balanced between realism and creative abstraction.",
+        "Should evoke a feeling of stillness and storytelling."
+    ]
 
-    story = f"""
-## 🎨 Cerita di Balik Desain: *{theme}*
+    prompt = f"""/imagine prompt: {random.choice(openings)} {tema.lower()} — styled in {gaya} aesthetic with a {vibe} mood. {random.choice(extras)}"""
 
-{hook}  
-Konsep ini berangkat dari nuansa **{vibe.lower()}**, dengan warna dominan **{color.lower()}** yang langsung narik perhatian.  
-Fokusnya ada di **{object_focus.lower()}**, disusun dengan komposisi yang {bg.lower()}.  
+    st.markdown('<div class="output-box">', unsafe_allow_html=True)
+    st.markdown("### 💎 Your ElPrompt:")
+    st.code(prompt, language="markdown")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-Kalau desain ini jadi orang, dia bakal keliatan **{mood.lower()}** — bukan cuma gaya, tapi punya karakter yang kuat.  
-
-{ending}
-"""
-
-    st.markdown(story)
-    st.success("🖌️ Cerita desain lo udah jadi, bro!")
-
+    st.markdown('<div class="signature">✨ elprompt style has comin.</div>', unsafe_allow_html=True)
