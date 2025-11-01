@@ -3,9 +3,9 @@ import random
 import base64
 
 # 🧠 Setup
-st.set_page_config(page_title="ElPrompt v2 — White Edition", layout="centered")
+st.set_page_config(page_title="ElPrompt v3 — White Edition", layout="centered")
 
-# 🌈 CSS STYLE — Clean, Animated, Elegant
+# 🌈 CSS STYLE — Clean + Elegant + Smooth Animation
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600&display=swap');
@@ -30,7 +30,6 @@ body {
     background: linear-gradient(90deg, #6C63FF, #00BFA6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
     margin-top: 40px;
     margin-bottom: 5px;
 }
@@ -110,14 +109,14 @@ body {
 """, unsafe_allow_html=True)
 
 # 🪄 Header
-st.markdown('<div class="title">ElPrompt v2</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">ElPrompt v3</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">where minimalism meets imagination 💭</div>', unsafe_allow_html=True)
 
 # 🎛️ Input Form
 with st.form("prompt_form"):
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    tema = st.text_input("💡 Tema / Ide dasar", placeholder="contoh: ruang kerja dengan cahaya senja")
+    tema = st.text_input("💡 Tema / Ide dasar", placeholder="contoh: mahottama pintu 05E brown 70x195 R")
     gaya = st.selectbox("🎨 Gaya / Style", [
         "cinematic ultra realistic", "minimal modern", "dreamy tone", 
         "fashion editorial", "product showcase", "brutalist contrast", "moody aesthetic"
@@ -128,8 +127,9 @@ with st.form("prompt_form"):
     ])
     
     use_photo = st.checkbox("📷 Pakai Foto Referensi (opsional)")
-    detail_level = st.slider("🧴 Skin Detail Intensity", 0, 10, 5)
-    
+    detail_level = st.slider("🧴 Skin / Texture Detail", 0, 10, 5)
+    output_mode = st.radio("⚙️ Mode Output", ["Gemini Friendly", "Midjourney Style"], horizontal=True)
+
     submitted = st.form_submit_button("✨ Summon ElPrompt")
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -150,25 +150,32 @@ if submitted:
         "immersed in soft realistic detail, vivid tone, and balanced contrast.",
         "featuring emotional depth, natural glow, and artistic shadow play."
     ]
-    
-    prompt = f"""/imagine prompt: {random.choice(openings)} {tema.lower()}, styled in {gaya} with {vibe} atmosphere. {random.choice(extras)}"""
 
-    if use_photo:
-        prompt += " Make sure to match face structure, lighting, and realism to the uploaded reference photo."
+    # 🧩 Generate Prompt
+    if output_mode == "Midjourney Style":
+        prompt = f"""/imagine prompt: {random.choice(openings)} {tema.lower()}, styled in {gaya} with {vibe} atmosphere. {random.choice(extras)}"""
+        if use_photo:
+            prompt += " Make sure to match face structure, lighting, and realism to the uploaded reference photo."
+        prompt += f" Detail intensity level: {detail_level}/10."
+    else:
+        prompt = f"""Buatkan gambar ultra realistic dan cinematic dari {tema.lower()} dengan gaya {gaya} dan nuansa {vibe}.
+Gunakan pencahayaan alami, tekstur nyata, refleksi lembut, dan detail realistis.
+Tingkatkan detail kulit/tekstur hingga level {detail_level}/10 untuk hasil natural."""
+        if use_photo:
+            prompt += " Jika ada foto referensi, buat hasil akhir semirip mungkin tanpa mengubah struktur wajah atau tubuh."
 
-    prompt += f" Detail intensity level: {detail_level}/10."
-
+    # 💾 Output UI
     st.markdown('<div class="output-box">', unsafe_allow_html=True)
     st.markdown("### 💎 Prompt Siap Copy ke Gemini:")
     st.code(prompt, language="markdown")
-    
-    # Copy button
+
+    # 📋 Copy Button
     copy_html = f"""
     <button class="copy-btn" onclick="navigator.clipboard.writeText(`{prompt}`)">📋 Salin Prompt</button>
     """
     st.markdown(copy_html, unsafe_allow_html=True)
 
-    # Download file
+    # 💾 Download Prompt .txt
     b64 = base64.b64encode(prompt.encode()).decode()
     href = f'<a href="data:file/txt;base64,{b64}" download="ElPrompt.txt"><button class="copy-btn">💾 Download .txt</button></a>'
     st.markdown(href, unsafe_allow_html=True)
